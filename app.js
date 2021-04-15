@@ -6,7 +6,7 @@ const {
   addNewAccount,
   findAccount,
   getAllAccounts,
-  AccountTransaction,
+  accountTransaction,
   transfer,
   filterByCash,
   filterByActiveCash,
@@ -15,9 +15,16 @@ const {
 app.use(express.json());
 // ------------------------------------
 app.post("/accounts", (req, res) => {
-  const data = req.body;
-  res.status(201).send(addNewAccount(data));
-  console.log(chalk.green.inverse("Manager attempted to created new account"));
+  try {
+    const data = req.body;
+    res.status(201).send(addNewAccount(data));
+    console.log(
+      chalk.green.inverse("Manager attempted to create a new account")
+    );
+  } catch (e) {
+    console.log(chalk.red.inverse(e.message));
+    res.status(400).send({ error: e.message });
+  }
 });
 // ------------------------------------
 app.get("/accounts/", (req, res) => {
@@ -50,7 +57,7 @@ app.get("/activecash/:cash", (req, res) => {
 app.put("/accounts/:id", (req, res) => {
   const { id } = req.params;
   const data = req.body;
-  res.send(AccountTransaction(id, data));
+  res.send(accountTransaction(id, data));
   console.log(
     chalk.green.inverse("Manager made an account transaction attempt")
   );

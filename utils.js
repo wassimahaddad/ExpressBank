@@ -42,7 +42,7 @@ const findAccount = (id) => {
   }
 };
 // ------------------------------------
-const AccountTransaction = (id, data) => {
+const accountTransaction = (id, data) => {
   // make deposit, withdrawal and add credit
   const account = findAccount(id);
   if (account !== "Account not found") {
@@ -74,11 +74,8 @@ const AccountTransaction = (id, data) => {
 const makeDeposit = (id, data) => {
   //adds cash to account
   const account = JSON.parse(findAccount(id));
-  const cash = account.cash + data.cash;
-  account.cash = cash;
-  console.log("cash=", account.cash);
-  removeUser(id);
-  addAccount(account);
+  account.cash = account.cash + data.cash;
+  updateAccount(id, account);
   return `Deposit of ${data.cash} was performed`;
 };
 // ------------------------------------
@@ -87,9 +84,7 @@ const cashWidthdraw = (id, data) => {
   const account = JSON.parse(findAccount(id));
   if (account.cash + account.credit + data.cash >= 0) {
     account.cash = account.cash + data.cash;
-    console.log(data.cash);
-    removeUser(id);
-    addAccount(account);
+    updateAccount(id, account);
     return `Withdrawal of ${Math.abs(data.cash)} was performed`;
   } else if (typeof data.cash !== "number") {
     return "Ivalid cash input";
@@ -100,22 +95,16 @@ const addCredit = (id, data) => {
   //adds credit to account
   const account = JSON.parse(findAccount(id));
   account.credit = account.credit + data.credit;
-  removeUser(id);
-  addAccount(account);
+  updateAccount(id, account);
   return `Credit of ${data.credit} was added`;
 };
 // ------------------------------------
-const addAccount = (data) => {
-  //receives object and adds it to db as json
+
+const updateAccount = (id, data) => {
   const db = JSON.parse(fs.readFileSync("./db.json").toString());
-  db.push(data);
-  fs.writeFileSync("./db.json", JSON.stringify(db));
-};
-// ------------------------------------
-const removeUser = (id) => {
-  const db = JSON.parse(fs.readFileSync("./db.json").toString());
-  const users = db.filter((obj) => obj.id !== id);
-  fs.writeFileSync("./db.json", JSON.stringify(users));
+  const accounts = db.filter((obj) => obj.id !== id);
+  accounts.push(data);
+  fs.writeFileSync("./db.json", JSON.stringify(accounts));
 };
 // ------------------------------------
 const transfer = (id1, id2, data) => {
@@ -133,7 +122,6 @@ const transfer = (id1, id2, data) => {
       if (data.cash <= account1.cash + account1.credit) {
         cashWidthdraw(id1, widthdraw);
         makeDeposit(id2, data);
-        console.log(performed);
         return "Transaction completed";
       } else
         return `Not enough funds in source account to complete the transaction`;
@@ -169,13 +157,10 @@ const filterByActiveCash = (cash) => {
 
 // ------------------------------------
 module.exports = {
-  addAccount,
   addNewAccount,
   findAccount,
-  makeDeposit,
   getAllAccounts,
-  addCredit,
-  AccountTransaction,
+  accountTransaction,
   transfer,
   filterByCash,
   filterByActiveCash,
