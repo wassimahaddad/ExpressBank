@@ -88,18 +88,25 @@ const removeUser = (id) => {
   fs.writeFileSync("./db.json", JSON.stringify(users));
 };
 // ------------------------------------
+let performed = 0;
 const transfer = (id1, id2, data) => {
   let widthdraw = { ...data };
   widthdraw.cash = -1 * widthdraw.cash;
   const account1 = JSON.parse(findAccount(id1));
+  const cash = data.cash;
   const funds = account1.cash + account1.credit;
-  if (data.cash <= funds) {
+  if (cash <= funds) {
+    performed = 1;
     cashWidthdraw(id1, widthdraw);
     makeDeposit(id2, data);
+    console.log(performed);
+  }
+  if (performed === 1) {
     return "Transaction completed";
   } else
     return `Not enough funds in source account to complete the transaction`;
 };
+
 // ------------------------------------
 module.exports = {
   addAccount,
