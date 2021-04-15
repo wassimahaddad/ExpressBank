@@ -3,14 +3,23 @@ const defaults = fs.readFileSync("./defaults.json");
 // ------------------------------------
 const addNewAccount = (data) => {
   //receives object and adds it to db as json with defaults for missing keys
-  const user = { ...JSON.parse(defaults), ...data };
-  const db = JSON.parse(fs.readFileSync("./db.json").toString());
-  db.push(user);
-  fs.writeFileSync("./db.json", JSON.stringify(db));
+  console.log(findAccount(data.id));
+  if (findAccount(data.id)) {
+    return "Account ID already exisits";
+  } else {
+    const user = { ...JSON.parse(defaults), ...data };
+    const db = JSON.parse(fs.readFileSync("./db.json").toString());
+    db.push(user);
+    fs.writeFileSync("./db.json", JSON.stringify(db));
+    return "new user created";
+  }
 };
 // ------------------------------------
 const getAllAccounts = () => {
-  return fs.readFileSync("./db.json");
+  const accounts = fs.readFileSync("./db.json").toString();
+  if (JSON.parse(accounts).length > 0) {
+    return accounts;
+  } else return "No Accounts found";
 };
 // ------------------------------------
 const findAccount = (id) => {
@@ -93,18 +102,21 @@ const transfer = (id1, id2, data) => {
   let widthdraw = { ...data };
   widthdraw.cash = -1 * widthdraw.cash;
   const account1 = JSON.parse(findAccount(id1));
-  const cash = data.cash;
-  const funds = account1.cash + account1.credit;
-  if (cash <= funds) {
-    performed = 1;
-    cashWidthdraw(id1, widthdraw);
-    makeDeposit(id2, data);
-    console.log(performed);
+  const account2 = JSON.parse(findAccount(id2));
+  if (!account1.active || !account2.active) {
+    return "Cannot complete transaction, one or more accounts are disabled";
+  } else {
+    if (data.cash <= account1.cash + account1.credit) {
+      performed = 1;
+      cashWidthdraw(id1, widthdraw);
+      makeDeposit(id2, data);
+      console.log(performed);
+    }
+    if (performed === 1) {
+      return "Transaction completed";
+    } else
+      return `Not enough funds in source account to complete the transaction`;
   }
-  if (performed === 1) {
-    return "Transaction completed";
-  } else
-    return `Not enough funds in source account to complete the transaction`;
 };
 
 // ------------------------------------

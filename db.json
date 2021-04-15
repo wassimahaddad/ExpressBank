@@ -1,1 +1,20 @@
-[{"id":"ffce2ba7-e153-427e-8c75-06d2d87d49cb","cash":10,"credit":0,"active":true},{"id":"b7ca8baa-bd61-434a-ba40-cc6ad6eb7f94","cash":-905,"credit":905,"active":true},{"id":"661c6baf-9ec3-490f-9ce5-739e6268ac29","cash":1979,"credit":320,"active":true}]
+[
+  {
+    "id": "ffce2ba7-e153-427e-8c75-06d2d87d49cb",
+    "cash": 10,
+    "credit": 0,
+    "active": true
+  },
+  {
+    "id": "b7ca8baa-bd61-434a-ba40-cc6ad6eb7f94",
+    "cash": -905,
+    "credit": 905,
+    "active": true
+  },
+  {
+    "id": "661c6baf-9ec3-490f-9ce5-739e6268ac29",
+    "cash": 1979,
+    "credit": 320,
+    "active": true
+  }
+]
