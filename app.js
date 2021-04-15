@@ -8,34 +8,48 @@ const {
   getAllAccounts,
   AccountTransaction,
   transfer,
+  filterByCash,
+  filterByActiveCash,
 } = require("./Utils");
 
 app.use(express.json());
 // ------------------------------------
 app.post("/accounts", (req, res) => {
   const data = req.body;
-  addNewAccount(data);
   res.status(201).send(addNewAccount(data));
-  console.log(chalk.green.inverse("Manager created new user"));
+  console.log(chalk.green.inverse("Manager attempted to created new account"));
 });
 // ------------------------------------
 app.get("/accounts/", (req, res) => {
-  getAllAccounts();
   console.log("Manager requested account list");
   res.send(getAllAccounts());
 });
 // ------------------------------------
 app.get("/accounts/:id", (req, res) => {
   const { id } = req.params;
-  findAccount(id);
   console.log(chalk.green.inverse(`Manager requested account with ID ${id}`));
   res.send(findAccount(id));
+});
+app.get("/cash/:cash", (req, res) => {
+  const { cash } = req.params;
+  console.log(
+    chalk.green.inverse(`Manager requested accounts with ${cash} of cash`)
+  );
+  res.send(filterByCash(cash));
+});
+app.get("/activecash/:cash", (req, res) => {
+  const { cash } = req.params;
+  console.log(
+    chalk.green.inverse(
+      `Manager requested active accounts with ${cash} of cash`
+    )
+  );
+  res.send(filterByActiveCash(cash));
 });
 // ------------------------------------
 app.put("/accounts/:id", (req, res) => {
   const { id } = req.params;
   const data = req.body;
-  AccountTransaction(id, data);
   res.send(AccountTransaction(id, data));
   console.log(
     chalk.green.inverse("Manager made an account transaction attempt")
@@ -44,7 +58,6 @@ app.put("/accounts/:id", (req, res) => {
 app.put("/accounts/:id1/:id2", (req, res) => {
   const { id1, id2 } = req.params;
   const data = req.body;
-  transfer(id1, id2, data);
   res.send(transfer(id1, id2, data));
   console.log(
     chalk.green.inverse(
