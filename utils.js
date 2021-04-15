@@ -17,7 +17,7 @@ const addNewAccount = (data) => {
     fs.writeFileSync("./db.json", JSON.stringify(db));
     return "New account created";
   } else {
-    return "Account ID already exisits";
+    return "Account ID already exists";
   }
 };
 // ------------------------------------
