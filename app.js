@@ -13,7 +13,7 @@ const {
 } = require("./Utils");
 
 app.use(express.json());
-// ------------------------------------
+// ----------------- Create new account -----------------------------------
 app.post("/accounts", (req, res) => {
   try {
     const data = req.body;
@@ -26,17 +26,18 @@ app.post("/accounts", (req, res) => {
     res.status(400).send({ error: e.message });
   }
 });
-// ------------------------------------
+// ----------------- List all accounts -------------------------------------
 app.get("/accounts/", (req, res) => {
-  console.log("Manager requested account list");
+  console.log(chalk.green.inverse("Manager requested account list"));
   res.send(getAllAccounts());
 });
-// ------------------------------------
+// ----------------- Find account by ID ------------------------------------
 app.get("/accounts/:id", (req, res) => {
   const { id } = req.params;
   console.log(chalk.green.inverse(`Manager requested account with ID ${id}`));
   res.send(findAccount(id));
 });
+// ----------------- Filter accounts by cash amount ------------------------
 app.get("/cash/:cash", (req, res) => {
   const { cash } = req.params;
   console.log(
@@ -44,6 +45,7 @@ app.get("/cash/:cash", (req, res) => {
   );
   res.send(filterByCash(cash));
 });
+// ----------------- Filter active accounts by cash amount -----------------
 app.get("/activecash/:cash", (req, res) => {
   const { cash } = req.params;
   console.log(
@@ -53,7 +55,7 @@ app.get("/activecash/:cash", (req, res) => {
   );
   res.send(filterByActiveCash(cash));
 });
-// ------------------------------------
+// ----------------- Desposit, withdraw cash and add credit -----------------
 app.put("/accounts/:id", (req, res) => {
   const { id } = req.params;
   const data = req.body;
@@ -62,6 +64,7 @@ app.put("/accounts/:id", (req, res) => {
     chalk.green.inverse("Manager made an account transaction attempt")
   );
 });
+// ------------------ Transfer money from Account1 to Account2 ---------------
 app.put("/accounts/:id1/:id2", (req, res) => {
   const { id1, id2 } = req.params;
   const data = req.body;
@@ -72,7 +75,18 @@ app.put("/accounts/:id1/:id2", (req, res) => {
     )
   );
 });
-// ------------------------------------
+// ------------------ Handle errors unhandled by defensive code ---------------
+app.use((req, res, next) => {
+  const error = new Error("Page not found");
+  error.status = 404;
+  next(error);
+});
+
+app.use((error, req, res, next) => {
+  res.status(error.status || 500);
+  res.send(error.message);
+});
+// ------------------ Start server on selected port number ---------------------
 const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Listening on port: ${PORT}`);
