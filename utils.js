@@ -102,7 +102,7 @@ const addCredit = (id, data) => {
 
 const updateAccount = (id, data) => {
   const db = JSON.parse(fs.readFileSync("./db.json").toString());
-  const accounts = db.filter((obj) => obj.id !== id);
+  const accounts = db.filter((obj) => obj.id.toString() !== id.toString());
   accounts.push(data);
   fs.writeFileSync("./db.json", JSON.stringify(accounts));
 };
